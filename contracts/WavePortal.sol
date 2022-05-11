@@ -17,8 +17,8 @@ contract WavePortal {
 
     Wave[] waves;
 
-    constructor() {
-        console.log("It's a Smart contract baby!");
+    constructor() payable {
+        console.log("This Smart contract is running baby!");
     }
 
     function wave(string memory _message) public {
@@ -28,6 +28,15 @@ contract WavePortal {
         waves.push(Wave(msg.sender, _message, block.timestamp));
 
         emit NewWave(msg.sender, block.timestamp, _message);
+
+        uint256 prizeAmount = 0.0001 ether;
+
+        require(
+            prizeAmount <= address(this).balance,
+            "This contract doesn't have enough funds!"
+        );
+        (bool success, ) = (msg.sender).call{value: prizeAmount}("");
+        require(success, "Failed to get funds!");
     }
 
     function getAllWaves() public view returns (Wave[] memory) {
